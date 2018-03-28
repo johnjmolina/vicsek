@@ -1,0 +1,16 @@
+*.o
+*.x
+*.out
+*.err
+*.h5
+*.pvsm
+*.xdmf
+*.ipynb
+*.sopt
+*.popt
+*.avi
+*.mp4
+*.png
+*.pyc
+*.silo
+output/

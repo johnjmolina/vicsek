@@ -1,0 +1,39 @@
+{
+    "DIR" : "output",
+    "NAME": "test",
+    "SEED": 12345,
+    "INIT": "RANDOM",
+    "OUTPUT": {
+	"NUMBER_SNAP": 500, 
+	"FRAMES_SNAP": 50,
+	"FORMAT": ["HDF5", "GSD"]
+    },
+    "NOISE": {
+	"ANGULAR": false, 
+	"VECTORIAL": {
+	    "SELECT": true,
+	    "ON":{
+		"SELF_TERM" : true
+	    }
+	}
+    },
+    "PARAMS": {
+	"DT": 1.0, 
+	"PI": {
+	    "NOISE": [0, 0.1],
+	    "VEL":   0.05, 	  
+	    "RHO":   0.1,	  
+	    "BOX":   [0.01, 0.01]
+	}, 
+	"R0": 0.2
+    }, 
+    "LINKLIST": {
+	"SELECT": true,
+	"ON":{
+	    "SORTED": false,
+	    "SELECT": "AUTO",
+	    "AUTO":{},
+	    "MANUAL":{"NUMBER": [3, 3]}
+	}
+    }
+}
