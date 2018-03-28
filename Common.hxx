@@ -28,7 +28,7 @@ namespace NOISE{
   enum NOISE{
     ANGULAR,
     VECTORIAL,
-    VECTORIAL_SELF,
+    NONE,
     _SIZE_ 
   };
 }

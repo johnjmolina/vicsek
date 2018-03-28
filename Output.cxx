@@ -32,12 +32,6 @@ void hdf5_init(){
       h5out.write_attr("vectorial_noise", "off");      	
     }
     
-    if(!SW_NOISE[NOISE::VECTORIAL_SELF]){
-      h5out.write_attr("self_noise", "off");
-    }else{
-      h5out.write_attr("self_noise", "on");
-    }
-    
     {
       SimIO::io_size rank, dims[DIM];      
       rank = 2;

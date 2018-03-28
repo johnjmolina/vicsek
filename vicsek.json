@@ -1,21 +1,12 @@
 {
     "DIR" : "output",
-    "NAME": "test",
+    "NAME": "test2",
     "SEED": 12345,
     "INIT": "RANDOM",
     "OUTPUT": {
 	"NUMBER_SNAP": 500, 
 	"FRAMES_SNAP": 50,
 	"FORMAT": ["HDF5", "GSD"]
-    },
-    "NOISE": {
-	"ANGULAR": false, 
-	"VECTORIAL": {
-	    "SELECT": true,
-	    "ON":{
-		"SELF_TERM" : true
-	    }
-	}
     },
     "PARAMS": {
 	"DT": 1.0, 

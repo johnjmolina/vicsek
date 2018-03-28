@@ -9,8 +9,6 @@ inline void theta_frc_sva(const int &i, const int &j, const double &r2, const do
 }
 inline void theta_frc_gca(const int &i, const int &j, const double &r2, const double ni[DIM], const double nj[DIM],
 			  double dni[DIM], double dnj[DIM]){
-  static const bool self      = SW_NOISE[NOISE::VECTORIAL_SELF];
-
   if( i != j){
     vec csxi = vxi[i];      
     dni[0] = nj[0] + ETA_VEC*csxi[0];
@@ -21,10 +19,8 @@ inline void theta_frc_gca(const int &i, const int &j, const double &r2, const do
     dnj[1]   = ni[1] + ETA_VEC*csxj[1];
   }else{ // i = j 
     vec csxi      = vxi[i];
-    double eta_i = (self ? ETA_VEC : 0.0);
-
-    dni[0] = dnj[0] = (ni[0] + eta_i*csxi[0]);
-    dni[1] = dnj[1] = (ni[1] + eta_i*csxi[1]);
+    dni[0] = dnj[0] = (ni[0] + ETA_VEC*csxi[0]);
+    dni[1] = dnj[1] = (ni[1] + ETA_VEC*csxi[1]);
   }
 }
 
@@ -218,7 +214,7 @@ int main(int argc, char** argv){
   initialize(argc, argv);
   WallTimer timer;
   timer.start();
-  int CHECK_POINT = MAX_NUM_STEPS / 10;
+  int CHECK_POINT = MAX(MAX_NUM_STEPS / 10, 1);
   cerr << "# 0  10  20  30  40  50  60  70  80  90  100%\n# *";
   for(ts = 0; ts < MAX_NUM_STEPS; ts++){
     md_step((ts % NUM_FRAMES_SNAP) == 0);        

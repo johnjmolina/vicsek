@@ -105,6 +105,10 @@ void read_input(const int &argc, char const* const* argv){
 	if(PI_RHO <= 0.0) print_error_exit("PI_RHO should be positive", PI_RHO);
 	if(PI_BOX[0] <= 0.0) print_error_exit("PI_BOX[0] should be positive", PI_BOX[0]);
 	if(PI_BOX[1] <= 0.0) print_error_exit("PI_BOX[1] should be positive", PI_BOX[1]);
+
+	if(PI_NOISE[0] > 0.0) SW_NOISE.set(NOISE::ANGULAR);
+	if(PI_NOISE[1] > 0.0) SW_NOISE.set(NOISE::VECTORIAL);
+	if(SW_NOISE.none({NOISE::ANGULAR, NOISE::VECTORIAL})) SW_NOISE.set(NOISE::NONE);
       }
 	
       // noise              : ETA_ang, ETA_vec
@@ -143,28 +147,7 @@ void read_input(const int &argc, char const* const* argv){
       print_error_exit("No valid output format specified : HDF5 | SILO | GSD");
     }
   }catch(exception &e){print_error_exit(e.what(), "parse output parameters");}
-    
-  try{// parse noise parameters
-    auto &loc       = json_parser::get_child(params, "NOISE");
-    {// ANGULAR noise
-      if(json_parser::get<bool>(loc, "ANGULAR")){
-	SW_NOISE.set(NOISE::ANGULAR);	
-      }else{
-	ETA_ANG = 0.0;
-      }
-    }
-    {// VECTORIAL noise
-      if(json_parser::get<bool>(loc["VECTORIAL"], "SELECT")){
-	// Standard Vectorial Gregoire Chate Algorithm : Intrinsic random noise on i	
-	SW_NOISE.set({NOISE::VECTORIAL});
-	auto &vloc = json_parser::get_child(loc["VECTORIAL"], "ON");
-	if(json_parser::get<bool>(vloc, "SELF_TERM")) SW_NOISE.set(NOISE::VECTORIAL_SELF); // SELF NOISE
-      }else{
-	ETA_VEC = 0.0;
-      }
-    }
-  }catch(exception &e){print_error_exit(e.what(), "parse noise parameters");}
-      
+          
   try{// parse linked list parameters
     if(json_parser::get<bool>(params["LINKLIST"], "SELECT")){
       auto &loc = json_parser::get_child(params["LINKLIST"], "ON");
@@ -198,13 +181,8 @@ void read_input(const int &argc, char const* const* argv){
   run_assert(SW_INIT.any(), "INIT switch not set");
   run_assert(SW_OUTPUT.any(), "OUTPUT switch not set");
 
-  run_assert(SW_NOISE.any_xor({NOISE::VECTORIAL, NOISE::VECTORIAL_SELF},
-			      {NOISE::ANGULAR}),
-	     "Noise VECTORIAL or ANGULAR flags should be set");
-  run_assert(SW_NOISE.any_iff({NOISE::VECTORIAL_SELF},
-			      {NOISE::VECTORIAL}),
-	     "Noise VECTORIAL type should be set");
-  
+  run_assert(SW_NOISE.any_xor({NOISE::VECTORIAL, NOISE::ANGULAR}, {NOISE::NONE}),
+	     "Noise VECTORIAL/ANGULAR flags should be set");
   
   run_assert(SW_LINK.any_xor({LINK::ON, LINK::AUTO, LINK::MANUAL, LINK::SORTED},
 			     {LINK::OFF}),
@@ -261,9 +239,7 @@ void read_input(const int &argc, char const* const* argv){
     cerr << "# Noise Flags          : " << endl;
     cerr << "#   Angular  (SVA)     = " << (SW_NOISE[NOISE::ANGULAR] ? "ON" : "OFF") << endl;
     cerr << "#   Vectorial(GCA)     = " << (SW_NOISE[NOISE::VECTORIAL] ? "ON" : "OFF") << endl;
-    if(SW_NOISE[NOISE::VECTORIAL]){
-      cerr << "# \tself           = " << (SW_NOISE[NOISE::VECTORIAL_SELF] ? "ON" : "OFF") << endl;
-    }
+    if(SW_NOISE[NOISE::NONE]) cerr << "#   NO NOISE !!! " << endl;
     cerr << "#" << endl;
     cerr << "# Link Flags           : " << endl;
     cerr << "#   Status             = " << (SW_LINK[LINK::OFF] ? "OFF" : "ON") << endl;
@@ -329,9 +305,12 @@ inline void md_init(){
   {
     if(SW_NOISE[NOISE::VECTORIAL]){
       theta_frc_ij = theta_frc_gca;
+      cerr << "#   Integrator            =  GCA" << endl;      
     }else{
       theta_frc_ij = theta_frc_sva;
+      cerr << "#   Integrator            =  SVA" << endl;
     }
+    cerr << "#" << endl;
   }
 }
 
