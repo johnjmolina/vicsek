@@ -1,6 +1,6 @@
 {
     "DIR" : "output",
-    "NAME": "test2",
+    "NAME": "test",
     "SEED": 12345,
     "INIT": "RANDOM",
     "OUTPUT": {
